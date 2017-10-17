@@ -3,3 +3,11 @@
 body {
 	background-color: $body-color;
 }
+
+.form-control {
+	max-width: 500px;
+}
+
+.search {
+	display: inline-block;
+}
