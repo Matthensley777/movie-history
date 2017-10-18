@@ -1,0 +1,8 @@
+body {
+  background-color: red; }
+
+.form-control {
+  max-width: 500px; }
+
+.search {
+  display: inline-block; }
