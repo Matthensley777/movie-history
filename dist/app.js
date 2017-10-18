@@ -26,7 +26,7 @@ module.exports = {retrieveKeys};
 },{"./tmdb":5}],2:[function(require,module,exports){
 "use strict";
 
-const domString = (movieArray) => {
+const domString = (movieArray, imgConfig) => {
 	console.log(movieArray);
 let domString = "";
 for (let i = 0; i < movieArray.length; i++) {
@@ -35,9 +35,9 @@ for (let i = 0; i < movieArray.length; i++) {
 }
   	domString += `<div class="col-sm-6 col-md-4">`;
     domString += `<div class="thumbnail">`;
-    // domString += `<img src="${movieArray[i].poster_path}">`;
+    domString += `<img src="${imgConfig.base_url}/w342/${movieArray[i].poster_path}">`;
     domString += `<div class="caption">`;
-    domString += `<h3>Title ${movieArray[i].title}</h3>`;
+    domString += `<h3>${movieArray[i].title}</h3>`;
     domString += `<p>${movieArray[i].overview}</p>`;
     domString += `<p><a href="#" class="btn btn-primary" role="button">Review</a> <a href="#" class="btn btn-default" role="button">Watchlist</a></p>`;
     domString += `</div>`;
@@ -91,7 +91,7 @@ events.pressEnter();
 "use strict";
 
 let tmdbKeys;
-
+let imgConfig;
 let dom = require('./dom');
 
 
@@ -106,6 +106,25 @@ const searchTMDB = (query) => {
     });
 };
 
+const tmdbConfigureation = () => {
+	return new Promise((resolve, reject) => {
+		$.ajax(`https://api.themoviedb.org/3/configuration?api_key=${tmdbKeys}`).done((data) => {
+			resolve(data.images);
+		}).fail((error) => {
+			reject(error);
+		});
+	});
+};
+
+const getConfig = () => {
+	tmdbConfigureation().then((results) => {
+		imgConfig = results;
+		console.log("getconfig", imgConfig);
+	}).catch((error) => {
+		console.log(error);
+	});
+};
+
 const searchMovie = (query) => {
 	searchTMDB(query).then((data) => {
 		showResults(data);
@@ -116,13 +135,17 @@ const searchMovie = (query) => {
 
 const setKeys = (apiKey) => {
     tmdbKeys = apiKey;
-    console.log(tmdbKeys);
+    getConfig();
 };
 
 const showResults = (movieArray) => {
-    dom.domString(movieArray);
     dom.clearDom();
+    dom.domString(movieArray, imgConfig);
 };
+
+
+
+
 
 module.exports = {setKeys, searchMovie};
 },{"./dom":2}]},{},[4]);

@@ -1,7 +1,7 @@
 "use strict";
 
 let tmdbKeys;
-
+let imgConfig;
 let dom = require('./dom');
 
 
@@ -16,6 +16,25 @@ const searchTMDB = (query) => {
     });
 };
 
+const tmdbConfigureation = () => {
+	return new Promise((resolve, reject) => {
+		$.ajax(`https://api.themoviedb.org/3/configuration?api_key=${tmdbKeys}`).done((data) => {
+			resolve(data.images);
+		}).fail((error) => {
+			reject(error);
+		});
+	});
+};
+
+const getConfig = () => {
+	tmdbConfigureation().then((results) => {
+		imgConfig = results;
+		console.log("getconfig", imgConfig);
+	}).catch((error) => {
+		console.log(error);
+	});
+};
+
 const searchMovie = (query) => {
 	searchTMDB(query).then((data) => {
 		showResults(data);
@@ -26,12 +45,16 @@ const searchMovie = (query) => {
 
 const setKeys = (apiKey) => {
     tmdbKeys = apiKey;
-    console.log(tmdbKeys);
+    getConfig();
 };
 
 const showResults = (movieArray) => {
-    dom.domString(movieArray);
     dom.clearDom();
+    dom.domString(movieArray, imgConfig);
 };
+
+
+
+
 
 module.exports = {setKeys, searchMovie};
