@@ -18,9 +18,9 @@
 	      
 	      
 	      <ul class="nav navbar-nav navbar-right">
-	        <li><a href="#">Authenticate</a></li>
-	        <li><a href="#">My Movies</a></li>
-	        <li><a href="#">Search</a></li>
+	        <li id="authenticate"><a href="#">Authenticate</a></li>
+	        <li id="mine"><a href="#">My Movies</a></li>
+	        <li id="navSearch"><a href="#">Search</a></li>
 	        
 	      </ul>
 	    </div><!-- /.navbar-collapse -->
@@ -28,12 +28,30 @@
 </nav>
 
 
-<div class="input-group input-group-lg col-xs-6 col-xs-offset-3">
- <span class="glyphicon glyphicon-search input-group-addon"></span>
-  <input id="searchBar" type="text" class="form-control" placeholder="Search" aria-describedby="basic-addon">
-</div>
+
+
+
 
 <div id="movies" class="container"></div>
+
+
+<div class="text-center hide" id="myMovies">
+	<h1>My Movies</h1>
+	<div ></div>
+</div>
+
+<div class="text-center hide" id="search">
+	<h1>Search</h1>
+	<div class="input-group input-group-lg col-xs-6 col-xs-offset-3">
+ 		<span class="glyphicon glyphicon-search input-group-addon"></span>
+  		<input id="searchBar" type="text" class="form-control" placeholder="Search" aria-describedby="basic-addon">
+	</div>
+</div>
+
+<div class="text-center" id="authScreen">
+	<h1>Sign in</h1>
+	<button class="btn btn-lg btn-default" id="googleButton">Sign in</button>
+</div>
 
 <script type="text/javascript" src="./lib/node_modules/jquery/dist/jquery.js"></script>
 <script type="text/javascript" src="./lib/node_modules/bootstrap/dist/js/bootstrap.js"></script>
