@@ -8,39 +8,39 @@ let dom = require('./dom');
 const searchTMDB = (query) => {
     return new Promise((resolve, reject) => {
         $.ajax(`https://api.themoviedb.org/3/search/movie?api_key=${tmdbKeys}&language=en-US&page=1&include_adult=false&query=${query}`).done((data) => {
-        		console.log(data);
-        		resolve(data.results);
+            console.log(data);
+            resolve(data.results);
         }).fail((error) => {
-        	reject(error);
+            reject(error);
         });
     });
 };
 
 const tmdbConfigureation = () => {
-	return new Promise((resolve, reject) => {
-		$.ajax(`https://api.themoviedb.org/3/configuration?api_key=${tmdbKeys}`).done((data) => {
-			resolve(data.images);
-		}).fail((error) => {
-			reject(error);
-		});
-	});
+    return new Promise((resolve, reject) => {
+        $.ajax(`https://api.themoviedb.org/3/configuration?api_key=${tmdbKeys}`).done((data) => {
+            resolve(data.images);
+        }).fail((error) => {
+            reject(error);
+        });
+    });
 };
 
 const getConfig = () => {
-	tmdbConfigureation().then((results) => {
-		imgConfig = results;
-		console.log("getconfig", imgConfig);
-	}).catch((error) => {
-		console.log(error);
-	});
+    tmdbConfigureation().then((results) => {
+        imgConfig = results;
+        console.log("getconfig", imgConfig);
+    }).catch((error) => {
+        console.log(error);
+    });
 };
 
 const searchMovie = (query) => {
-	searchTMDB(query).then((data) => {
-		showResults(data);
-	}).catch((error) => {
-		console.log("error in search movie", error);
-	});
+    searchTMDB(query).then((data) => {
+        showResults(data);
+    }).catch((error) => {
+        console.log("error in search movie", error);
+    });
 };
 
 const setKeys = (apiKey) => {
@@ -57,4 +57,7 @@ const showResults = (movieArray) => {
 
 
 
-module.exports = {setKeys, searchMovie};
+module.exports = {
+    setKeys,
+    searchMovie
+};
