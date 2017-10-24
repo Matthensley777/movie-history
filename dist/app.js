@@ -18,8 +18,10 @@ const apiKeys = () => {
 const retrieveKeys = () => {
     apiKeys().then((results) => {
         tmdb.setKeys(results.tmdb.apiKey);
-        firebaseApi.setKey(results.firebaseKeys);
-        firebase.initializeApp(results.firebaseKeys);
+        console.log(results.fireBaseKeys);
+        firebaseApi.setKey(results.fireBaseKeys);
+        firebase.initializeApp(results.fireBaseKeys);
+        console.log("initializeApp");
     }).catch((error) => {
         console.log("error in retrieve keys", error);
     });
@@ -71,6 +73,8 @@ module.exports = {
 "use strict";
 
 const tmdb = require('./tmdb');
+const firebaseApi = require('./firebaseApi');
+
 
 const pressEnter = () => {
     $(document).keypress((e) => {
@@ -102,32 +106,58 @@ const myLinks = () => {
 };
 
 
+const googleAuth = () => {
+	$('#googleButton').click((e) =>{
+		firebaseApi.authenticateGoogle().then((result) =>{
+			console.log("result", result);
+		}).catch((err) =>{
+			console.log("error in authenticateGoogle", err);
+		});
+	});
+};
+
+
 module.exports = {
     pressEnter,
-    myLinks
+    myLinks,
+    googleAuth
 };
-},{"./tmdb":6}],4:[function(require,module,exports){
+},{"./firebaseApi":4,"./tmdb":6}],4:[function(require,module,exports){
 "use strict";
 
 let firebaseKey = "";
+let userUid = "";
 
 const setKey = (key) => {
 	firebaseKey = key;
 };
 
-module.exports = {setKey};
+//Firebase: GOOGLE - Use input credentials to authenticate user.
+  let authenticateGoogle = () => {
+    return new Promise((resolve, reject) => {
+      var provider = new firebase.auth.GoogleAuthProvider();
+      firebase.auth().signInWithPopup(provider)
+        .then((authData) => {
+        	userUid = authData.user.uid;
+            resolve(authData.user);
+        }).catch((error) => {
+            reject(error);
+        });
+    });
+  };
+
+module.exports = {setKey, authenticateGoogle};
 },{}],5:[function(require,module,exports){
 "use strict";
 
-let dom = require('./dom');
 let events = require('./events');
 let apiKeys = require('./apiKeys');
 
-
 apiKeys.retrieveKeys();
 events.myLinks();
+events.googleAuth();
 events.pressEnter();
-},{"./apiKeys":1,"./dom":2,"./events":3}],6:[function(require,module,exports){
+},{"./apiKeys":1,"./events":3}],6:[function(require,module,exports){
 "use strict";
 
 let tmdbKeys;

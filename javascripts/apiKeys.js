@@ -17,8 +17,10 @@ const apiKeys = () => {
 const retrieveKeys = () => {
     apiKeys().then((results) => {
         tmdb.setKeys(results.tmdb.apiKey);
-        firebaseApi.setKey(results.firebaseKeys);
-        firebase.initializeApp(results.firebaseKeys);
+        console.log(results.fireBaseKeys);
+        firebaseApi.setKey(results.fireBaseKeys);
+        firebase.initializeApp(results.fireBaseKeys);
+        console.log("initializeApp");
     }).catch((error) => {
         console.log("error in retrieve keys", error);
     });
