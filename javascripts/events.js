@@ -49,40 +49,58 @@ const googleAuth = () => {
 	});
 };
 
-const wishListEvent = () => {
-	$("body").on("click", ".wishlist", (e) => {
+
+const wishListEvents = () => {
+	$('body').on('click', '.wishlist', (e) => {
 		console.log("wishlist event", e);
-		let mommy = e.target.closest(".movie");
+		let mommy = e.target.closest('.movie');
+
 		let newMovie = {
-			"title": $(mommy).find(".title").html(),
-			"overview": $(mommy).find(".overview").html(),
-			"poster_path": $(mommy).find(".poster_path").attr("src").split('/').pop(),
+			"title":$(mommy).find('.title').html(),
+			"overview": $(mommy).find('.overview').html(),
+			"poster_path":$(mommy).find('.poster_path').attr('src').split('/').pop(),
 			"rating": 0,
 			"isWatched": false,
 			"uid": ""
 		};
-		console.log("newMovie", newMovie);
-		firebaseApi.saveMovie().then((results) => {
-			console.log("saveMovie results", results);
-		}).catch((err) => {
+
+		firebaseApi.saveMovie(newMovie).then(() =>{
+			$(mommy).remove();
+		}).catch((err) =>{
 			console.log("error in saveMovie", err);
 		});
+
 	});
 };
 
-const saveMovie = (movie) => {
-	movie.uid = userUid;
-	return new Promise((resolve, reject) => {
-		$.ajax({
-			mothod: "POST",
-			url:`${firebaseApi.fireBaseKey.databaseURL}/movies.json`,
-			data: JSON.stringify(movie)
-		}).then((result)=> {
-			resolve(result);
-		}).catch((error)=> {
-			reject(error);
+const reviewEvents = () => {
+	$('body').on('click', '.review', (e) => {
+		let mommy = e.target.closest('.movie');
+
+		let newMovie = {
+			"title":$(mommy).find('.title').html(),
+			"overview": $(mommy).find('.overview').html(),
+			"poster_path":$(mommy).find('.poster_path').attr('src').split('/').pop(),
+			"rating": 0,
+			"isWatched": true,
+			"uid": ""
+		};
+
+		firebaseApi.saveMovie(newMovie).then(() =>{
+			$(mommy).remove();
+		}).catch((err) =>{
+			console.log("error in saveMovie", err);
 		});
+
 	});
+};
+
+const init = () => {
+myLinks();
+googleAuth();
+pressEnter();
+wishListEvents();
+reviewEvents();
 };
 
 
@@ -96,24 +114,4 @@ const saveMovie = (movie) => {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-module.exports = {pressEnter, myLinks, googleAuth, wishListEvent, saveMovie};
+module.exports = {init};

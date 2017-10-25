@@ -39,6 +39,20 @@ const setKey = (key) => {
 	});
 };
 
+const saveMovie = (movie) => {
+	movie.uid = userUid;
+	return new Promise((resolve, reject) => {
+		$.ajax({
+			mothod: "POST",
+			url:`${fireBaseKey.databaseURL}/movies.json`,
+			data: JSON.stringify(movie)
+		}).then((result)=> {
+			resolve(result);
+		}).catch((error)=> {
+			reject(error);
+		});
+	});
+};
 
 
 
@@ -49,4 +63,4 @@ const setKey = (key) => {
 
 
 
-module.exports = {setKey, authenticateGoogle, getMovieList};
+module.exports = {setKey, authenticateGoogle, getMovieList, saveMovie};

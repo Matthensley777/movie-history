@@ -40,7 +40,7 @@ const domString = (movieArray, imgConfig, divName) => {
     domString +=      `<div class="caption">`;
     domString +=        `<h3 class="title">${movieArray[i].title}</h3>`;
     domString +=        `<p class ="overview">${movieArray[i].overview}</p>`;
-    domString +=        `<p><a href="#" class="btn btn-primary" role="button">Review</a> <a class="btn btn-default wishlist" role="button">Watchlist</a></p>`;
+    domString +=        `<p><a class="btn btn-primary review" role="button">Review</a> <a class="btn btn-default wishlist" role="button">Watchlist</a></p>`;
     domString +=        `</div>`;
     domString +=      `</div>`;
     domString +=    `</div>`;
@@ -113,40 +113,58 @@ const googleAuth = () => {
 	});
 };
 
-const wishListEvent = () => {
-	$("body").on("click", ".wishlist", (e) => {
+
+const wishListEvents = () => {
+	$('body').on('click', '.wishlist', (e) => {
 		console.log("wishlist event", e);
-		let mommy = e.target.closest(".movie");
+		let mommy = e.target.closest('.movie');
+
 		let newMovie = {
-			"title": $(mommy).find(".title").html(),
-			"overview": $(mommy).find(".overview").html(),
-			"poster_path": $(mommy).find(".poster_path").attr("src").split('/').pop(),
+			"title":$(mommy).find('.title').html(),
+			"overview": $(mommy).find('.overview').html(),
+			"poster_path":$(mommy).find('.poster_path').attr('src').split('/').pop(),
 			"rating": 0,
 			"isWatched": false,
 			"uid": ""
 		};
-		console.log("newMovie", newMovie);
-		firebaseApi.saveMovie().then((results) => {
-			console.log("saveMovie results", results);
-		}).catch((err) => {
+
+		firebaseApi.saveMovie(newMovie).then(() =>{
+			$(mommy).remove();
+		}).catch((err) =>{
 			console.log("error in saveMovie", err);
 		});
+
 	});
 };
 
-const saveMovie = (movie) => {
-	movie.uid = userUid;
-	return new Promise((resolve, reject) => {
-		$.ajax({
-			mothod: "POST",
-			url:`${firebaseApi.fireBaseKey.databaseURL}/movies.json`,
-			data: JSON.stringify(movie)
-		}).then((result)=> {
-			resolve(result);
-		}).catch((error)=> {
-			reject(error);
+const reviewEvents = () => {
+	$('body').on('click', '.review', (e) => {
+		let mommy = e.target.closest('.movie');
+
+		let newMovie = {
+			"title":$(mommy).find('.title').html(),
+			"overview": $(mommy).find('.overview').html(),
+			"poster_path":$(mommy).find('.poster_path').attr('src').split('/').pop(),
+			"rating": 0,
+			"isWatched": true,
+			"uid": ""
+		};
+
+		firebaseApi.saveMovie(newMovie).then(() =>{
+			$(mommy).remove();
+		}).catch((err) =>{
+			console.log("error in saveMovie", err);
 		});
+
 	});
+};
+
+const init = () => {
+myLinks();
+googleAuth();
+pressEnter();
+wishListEvents();
+reviewEvents();
 };
 
 
@@ -160,27 +178,7 @@ const saveMovie = (movie) => {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-module.exports = {pressEnter, myLinks, googleAuth, wishListEvent, saveMovie};
+module.exports = {init};
 },{"./dom":2,"./firebaseApi":4,"./tmdb":6}],4:[function(require,module,exports){
 "use strict";
 
@@ -223,6 +221,20 @@ const setKey = (key) => {
 	});
 };
 
+const saveMovie = (movie) => {
+	movie.uid = userUid;
+	return new Promise((resolve, reject) => {
+		$.ajax({
+			mothod: "POST",
+			url:`${fireBaseKey.databaseURL}/movies.json`,
+			data: JSON.stringify(movie)
+		}).then((result)=> {
+			resolve(result);
+		}).catch((error)=> {
+			reject(error);
+		});
+	});
+};
 
 
 
@@ -233,7 +245,7 @@ const setKey = (key) => {
 
 
 
-module.exports = {setKey, authenticateGoogle, getMovieList};
+module.exports = {setKey, authenticateGoogle, getMovieList, saveMovie};
 },{}],5:[function(require,module,exports){
 "use strict";
 
@@ -241,10 +253,7 @@ let events = require('./events');
 let apiKeys = require('./apiKeys');
 
 apiKeys.retrieveKeys();
-events.myLinks();
-events.googleAuth();
-events.pressEnter();
-events.wishListEvent();
+events.init();
 
 },{"./apiKeys":1,"./events":3}],6:[function(require,module,exports){
 "use strict";
