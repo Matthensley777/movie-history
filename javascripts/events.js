@@ -4,6 +4,8 @@ const tmdb = require('./tmdb');
 const dom = require('./dom');
 const firebaseApi = require('./firebaseApi');
 
+let userUid;
+
 const pressEnter = () => {
   $(document).keypress((e) => {
     if (e.key === 'Enter'){
@@ -60,7 +62,26 @@ const wishListEvent = () => {
 			"uid": ""
 		};
 		console.log("newMovie", newMovie);
-		// firebaseApi.saveMovie().then().catch();
+		firebaseApi.saveMovie().then((results) => {
+			console.log("saveMovie results", results);
+		}).catch((err) => {
+			console.log("error in saveMovie", err);
+		});
+	});
+};
+
+const saveMovie = (movie) => {
+	movie.uid = userUid;
+	return new Promise((resolve, reject) => {
+		$.ajax({
+			mothod: "POST",
+			url:`${firebaseApi.fireBaseKey.databaseURL}/movies.json`,
+			data: JSON.stringify(movie)
+		}).then((result)=> {
+			resolve(result);
+		}).catch((error)=> {
+			reject(error);
+		});
 	});
 };
 
@@ -95,6 +116,4 @@ const wishListEvent = () => {
 
 
 
-
-
-module.exports = {pressEnter, myLinks, googleAuth, wishListEvent};
+module.exports = {pressEnter, myLinks, googleAuth, wishListEvent, saveMovie};
