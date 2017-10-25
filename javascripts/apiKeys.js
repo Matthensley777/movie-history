@@ -3,29 +3,24 @@
 const tmdb = require('./tmdb');
 const firebaseApi = require('./firebaseApi');
 
-
 const apiKeys = () => {
-    return new Promise((resolve, reject) => {
-        $.ajax('./db/apiKeys.json').done((data) => {
-            resolve(data.apiKeys);
-        }).fail((error) => {
-            reject(error);
-        });
+  return new Promise((resolve, reject) => {
+    $.ajax('./db/apiKeys.json').done((data) => {
+      resolve(data.apiKeys);
+    }).fail((error) => {
+      reject(error);
     });
+  });
 };
 
 const retrieveKeys = () => {
-    apiKeys().then((results) => {
-        tmdb.setKeys(results.tmdb.apiKey);
-        console.log(results.fireBaseKeys);
-        firebaseApi.setKey(results.fireBaseKeys);
-        firebase.initializeApp(results.fireBaseKeys);
-        console.log("initializeApp");
-    }).catch((error) => {
-        console.log("error in retrieve keys", error);
-    });
+  apiKeys().then((results) => {
+    tmdb.setKey(results.tmdb.apiKey);
+    firebaseApi.setKey(results.fireBaseKeys);
+    firebase.initializeApp(results.fireBaseKeys);
+  }).catch((error) => {
+    console.log("error in retrieve keys", error);
+  });
 };
 
-module.exports = {
-    retrieveKeys
-};
+module.exports = {retrieveKeys};

@@ -1,10 +1,10 @@
 "use strict";
 
-let firebaseKey = "";
+let fireBaseKey = "";
 let userUid = "";
 
 const setKey = (key) => {
-	firebaseKey = key;
+	fireBaseKey = key;
 };
 
 //Firebase: GOOGLE - Use input credentials to authenticate user.
@@ -21,4 +21,32 @@ const setKey = (key) => {
     });
   };
 
-module.exports = {setKey, authenticateGoogle};
+ const getMovieList = () => {
+	let movies = [];
+	return new Promise((resolve, reject) =>{
+		$.ajax(`${fireBaseKey.databaseURL}/movies.json?orderBy="uid"&equalTo="${userUid}"`).then((fbMovies) =>{
+			if(fbMovies != null){
+				Object.keys(fbMovies).forEach((key) =>{
+					fbMovies[key].id = key;
+					movies.push(fbMovies[key]);
+				});
+			}
+
+			resolve(movies);
+		}).catch((err) =>{
+			reject(err);
+		});
+	});
+};
+
+
+
+
+
+
+
+
+
+
+
+module.exports = {setKey, authenticateGoogle, getMovieList};
