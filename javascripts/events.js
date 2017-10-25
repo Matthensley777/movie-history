@@ -4,8 +4,6 @@ const tmdb = require('./tmdb');
 const dom = require('./dom');
 const firebaseApi = require('./firebaseApi');
 
-let userUid;
-
 const pressEnter = () => {
   $(document).keypress((e) => {
     if (e.key === 'Enter'){
@@ -29,7 +27,7 @@ const myLinks = () => {
 			$("#authScreen").addClass("hide");
 			firebaseApi.getMovieList().then((results) =>{
 				dom.clearDom('moviesMine');
-				dom.domString(results, tmdb.getImgConfig(), 'moviesMine');
+				dom.domString(results, tmdb.getImgConfig(), 'moviesMine', false);
 			}).catch((err) =>{
 				console.log("error in getMovieList", err);
 			});
@@ -52,7 +50,6 @@ const googleAuth = () => {
 
 const wishListEvents = () => {
 	$('body').on('click', '.wishlist', (e) => {
-		console.log("wishlist event", e);
 		let mommy = e.target.closest('.movie');
 
 		let newMovie = {
@@ -69,9 +66,9 @@ const wishListEvents = () => {
 		}).catch((err) =>{
 			console.log("error in saveMovie", err);
 		});
-
 	});
 };
+
 
 const reviewEvents = () => {
 	$('body').on('click', '.review', (e) => {
@@ -91,23 +88,16 @@ const reviewEvents = () => {
 		}).catch((err) =>{
 			console.log("error in saveMovie", err);
 		});
-
 	});
 };
 
-const init = () => {
-myLinks();
-googleAuth();
-pressEnter();
-wishListEvents();
-reviewEvents();
+const init = () =>{
+	myLinks();
+	googleAuth();
+	pressEnter();
+	wishListEvents();
+	reviewEvents();
 };
-
-
-
-
-
-
 
 
 

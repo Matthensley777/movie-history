@@ -27,7 +27,7 @@ const setKey = (key) => {
 		$.ajax(`${fireBaseKey.databaseURL}/movies.json?orderBy="uid"&equalTo="${userUid}"`).then((fbMovies) =>{
 			if(fbMovies != null){
 				Object.keys(fbMovies).forEach((key) =>{
-					fbMovies[key].id = key;
+					fbMovies[key].id = key;  
 					movies.push(fbMovies[key]);
 				});
 			}
