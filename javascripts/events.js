@@ -1,19 +1,19 @@
 "use strict";
 
 const tmdb = require('./tmdb');
+const dom = require('./dom');
 const firebaseApi = require('./firebaseApi');
 
-
 const pressEnter = () => {
-    $(document).keypress((e) => {
-        if (e.key === 'Enter') {
-            let searchText = $("#searchBar").val();
-            let query = searchText.replace(/\s/g, "%20");
-            tmdb.searchMovie(query);
-        }
-    });
-};
+  $(document).keypress((e) => {
+    if (e.key === 'Enter'){
+      let searchText = $('#searchBar').val();
+      let query = searchText.replace(/\s/g, "%20");
+      tmdb.searchMovies(query);
+    }
+  });
 
+};
 
 const myLinks = () => {
 	$(document).click((e) =>{
@@ -25,6 +25,12 @@ const myLinks = () => {
 			$("#search").addClass("hide");
 			$("#myMovies").removeClass("hide");
 			$("#authScreen").addClass("hide");
+			firebaseApi.getMovieList().then((results) =>{
+				dom.clearDom('moviesMine');
+				dom.domString(results, tmdb.getImgConfig(), 'moviesMine');
+			}).catch((err) =>{
+				console.log("error in getMovieList", err);
+			});
 		}else if (e.target.id === "authenticate"){
 			$("#search").addClass("hide");
 			$("#myMovies").addClass("hide");
@@ -33,20 +39,62 @@ const myLinks = () => {
 	});
 };
 
-
 const googleAuth = () => {
 	$('#googleButton').click((e) =>{
-		firebaseApi.authenticateGoogle().then((result) =>{
-			console.log("result", result);
-		}).catch((err) =>{
+		firebaseApi.authenticateGoogle().then().catch((err) =>{
 			console.log("error in authenticateGoogle", err);
 		});
 	});
 };
 
-
-module.exports = {
-    pressEnter,
-    myLinks,
-    googleAuth
+const wishListEvent = () => {
+	$("body").on("click", ".wishlist", (e) => {
+		console.log("wishlist event", e);
+		let mommy = e.target.closest(".movie");
+		let newMovie = {
+			"title": $(mommy).find(".title").html(),
+			"overview": $(mommy).find(".overview").html(),
+			"poster_path": $(mommy).find(".poster_path").attr("src").split('/').pop(),
+			"rating": 0,
+			"isWatched": false,
+			"uid": ""
+		};
+		console.log("newMovie", newMovie);
+		// firebaseApi.saveMovie().then().catch();
+	});
 };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+module.exports = {pressEnter, myLinks, googleAuth, wishListEvent};
