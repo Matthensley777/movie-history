@@ -1,10 +1,10 @@
 "use strict";
 
-let fireBaseKey = "";
+let firebaseKey = "";
 let userUid = "";
 
 const setKey = (key) => {
-	fireBaseKey = key;
+	firebaseKey = key;
 };
 
 //Firebase: GOOGLE - Use input credentials to authenticate user.
@@ -24,16 +24,44 @@ const setKey = (key) => {
  const getMovieList = () => {
 	let movies = [];
 	return new Promise((resolve, reject) =>{
-		$.ajax(`${fireBaseKey.databaseURL}/movies.json?orderBy="uid"&equalTo="${userUid}"`).then((fbMovies) =>{
+		$.ajax(`${firebaseKey.databaseURL}/movies.json?orderBy="uid"&equalTo="${userUid}"`).then((fbMovies) =>{
 			if(fbMovies != null){
 				Object.keys(fbMovies).forEach((key) =>{
-					fbMovies[key].id = key;
+					fbMovies[key].id = key;  
 					movies.push(fbMovies[key]);
 				});
 			}
 
 			resolve(movies);
 		}).catch((err) =>{
+			reject(err);
+		});
+	});
+};
+
+const saveMovie = (movie) => {
+	movie.uid = userUid;
+	return new Promise((resolve, reject) => {
+		$.ajax({
+			mothod: "POST",
+			url:`${firebaseKey.databaseURL}/movies.json`,
+			data: JSON.stringify(movie)
+		}).then((result)=> {
+			resolve(result);
+		}).catch((error)=> {
+			reject(error);
+		});
+	});
+};
+
+const deleteMovie = (movieId) => {
+	return new Promise((resolve, reject) => {
+		$.ajax({
+			method: "DELETE",
+			url: `${firebaseKey.databaseURL}/movies/${movieId}.json`,
+		}).then((fbMoviee) => {
+			resolve(fbMoviee);
+		}).catch((err) => {
 			reject(err);
 		});
 	});
@@ -46,7 +74,4 @@ const setKey = (key) => {
 
 
 
-
-
-
-module.exports = {setKey, authenticateGoogle, getMovieList};
+module.exports = {setKey, authenticateGoogle, getMovieList, saveMovie, deleteMovie};
