@@ -37,7 +37,7 @@ const domString = (movieArray, imgConfig, divName, search) => {
     domString += `<div class="col-sm-6 col-md-4 movie">`;
     domString +=    `<div class="thumbnail">`;
     if (!search) {
-    domString += `<button class="btn btn-default" data-firebase-id="${movieArray[i].id}">x</button>`;
+    domString += `<button class="btn btn-default delete" data-firebase-id="${movieArray[i].id}">x</button>`;
   }
     domString +=      `<img class="poster_path" src="${imgConfig.base_url}/w342/${movieArray[i].poster_path}" alt="">`;
     domString +=      `<div class="caption">`;
@@ -236,6 +236,18 @@ const saveMovie = (movie) => {
 	});
 };
 
+const deleteMovie = (movieId) => {
+	return new Promise((resolve, reject) => {
+		$.ajax({
+			method: "DELETE",
+			url: `${fireBaseKey.databaseURL}/movies/${movieId}.json`,
+		}).then((fbMoviee) => {
+			resolve(fbMoviee);
+		}).catch((err) => {
+			reject(err);
+		});
+	});
+};
 
 
 
@@ -244,8 +256,7 @@ const saveMovie = (movie) => {
 
 
 
-
-module.exports = {setKey, authenticateGoogle, getMovieList, saveMovie};
+module.exports = {setKey, authenticateGoogle, getMovieList, saveMovie, deleteMovie};
 },{}],5:[function(require,module,exports){
 "use strict";
 
