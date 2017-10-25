@@ -151,7 +151,11 @@ const saveMovie = (movie) => {
 
 
 
-
+const deleteMovie = () => {
+	$("body").on("click", "delete", () => {
+		let movieId = "";
+	});
+};
 
 
 
