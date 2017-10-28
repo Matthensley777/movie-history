@@ -89,13 +89,13 @@ const pressEnter = () => {
 
 };
 
-const getMahMovies = () => {
+const getMahMovies = () =>{
 	firebaseApi.getMovieList().then((results) =>{
-				dom.clearDom('moviesMine');
-				dom.domString(results, tmdb.getImgConfig(), 'moviesMine', false);
-			}).catch((err) =>{
-				console.log("error in getMovieList", err);
-			});
+		dom.clearDom('moviesMine');
+		dom.domString(results, tmdb.getImgConfig(), 'moviesMine', false);
+	}).catch((err) =>{
+		console.log("error in getMovieList", err);
+	});
 };
 
 const myLinks = () => {
@@ -151,21 +151,41 @@ const wishListEvents = () => {
 const reviewEvents = () => {
 	$('body').on('click', '.review', (e) => {
 		let mommy = e.target.closest('.movie');
-	});
-};
 
+		let newMovie = {
+			"title":$(mommy).find('.title').html(),
+			"overview": $(mommy).find('.overview').html(),
+			"poster_path":$(mommy).find('.poster_path').attr('src').split('/').pop(),
+			"rating": 0,
+			"isWatched": true,
+			"uid": ""
+		};
 
-const deleteMovie = () => {
-	$('body').on("click", ".delete", (e) => {
-		let movieId = $(e.target).data("firebase-id");
-		firebaseApi.deleteMovie(movieId).then(() => {
-			getMahMovies();
-		
-		}).catch(()=> {
-
+		firebaseApi.saveMovie(newMovie).then(() =>{
+			$(mommy).remove();
+		}).catch((err) =>{
+			console.log("error in saveMovie", err);
 		});
 	});
 };
+
+const deleteMovie = () => {
+	$('body').on('click', '.delete', (e) => {
+		let movieId = $(e.target).data('firebase-id');
+
+		firebaseApi.deleteMovie(movieId).then(() =>{
+			getMahMovies();
+		}).catch((err) => {
+			console.log("error in deleteMovie", err);
+		});
+	});
+};
+
+
+
+
+
+
 
 const init = () =>{
 	myLinks();
@@ -173,12 +193,8 @@ const init = () =>{
 	pressEnter();
 	wishListEvents();
 	reviewEvents();
+	deleteMovie();
 };
-
-
-
-
-
 
 module.exports = {init};
 },{"./dom":2,"./firebaseApi":4,"./tmdb":6}],4:[function(require,module,exports){
@@ -187,31 +203,34 @@ module.exports = {init};
 let firebaseKey = "";
 let userUid = "";
 
-const setKey = (key) => {
+const setKey = (key) =>{
 	firebaseKey = key;
 };
 
 //Firebase: GOOGLE - Use input credentials to authenticate user.
-  let authenticateGoogle = () => {
-    return new Promise((resolve, reject) => {
-      var provider = new firebase.auth.GoogleAuthProvider();
-      firebase.auth().signInWithPopup(provider)
-        .then((authData) => {
-        	userUid = authData.user.uid;
-            resolve(authData.user);
-        }).catch((error) => {
-            reject(error);
-        });
-    });
-  };
+let authenticateGoogle = () => {
+	return new Promise((resolve, reject) => {
+	  var provider = new firebase.auth.GoogleAuthProvider();
+	  firebase.auth().signInWithPopup(provider)
+	    .then((authData) => {
+	    	userUid = authData.user.uid;
+	        resolve(authData.user);
+	    }).catch((error) => {
+	        reject(error);
+	    });
+	});
+};
 
- const getMovieList = () => {
+const getMovieList = () => {
 	let movies = [];
 	return new Promise((resolve, reject) =>{
 		$.ajax(`${firebaseKey.databaseURL}/movies.json?orderBy="uid"&equalTo="${userUid}"`).then((fbMovies) =>{
 			if(fbMovies != null){
+				// fbMovies = {"movies0": {"title":"Star Wars", "overview":"so cool"}, "movies1": {"title":"Star Wars", "overview":"so cool"}}
+				// object.keys(fbMovies ) = ["movies0", "movies1"]
 				Object.keys(fbMovies).forEach((key) =>{
-					fbMovies[key].id = key;  
+					// key = "movies0"
+					fbMovies[key].id = key;  // fbMovies["movies0"].id = "movies0"
 					movies.push(fbMovies[key]);
 				});
 			}
@@ -225,31 +244,44 @@ const setKey = (key) => {
 
 const saveMovie = (movie) => {
 	movie.uid = userUid;
-	return new Promise((resolve, reject) => {
+	return new Promise((resolve, reject) =>{
 		$.ajax({
-			mothod: "POST",
-			url:`${firebaseKey.databaseURL}/movies.json`,
+			method: "POST",
+			url: `${firebaseKey.databaseURL}/movies.json`,
 			data: JSON.stringify(movie)
-		}).then((result)=> {
+		}).then((result) => {
 			resolve(result);
-		}).catch((error)=> {
+		}).catch((error) => {
 			reject(error);
 		});
 	});
 };
 
+
+
+
 const deleteMovie = (movieId) => {
 	return new Promise((resolve, reject) => {
 		$.ajax({
 			method: "DELETE",
-			url: `${firebaseKey.databaseURL}/movies/${movieId}.json`,
-		}).then((fbMoviee) => {
-			resolve(fbMoviee);
-		}).catch((err) => {
+			url:`${firebaseKey.databaseURL}/movies/${movieId}.json`,
+		}).then((fbMovie) =>{
+			resolve(fbMovie);
+		}).catch((err) =>{
 			reject(err);
 		});
 	});
 };
+
+
+
+
+
+
+
+
+
+
 
 
 
